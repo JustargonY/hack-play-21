@@ -13,8 +13,6 @@ load_dotenv()
 SCW_SECRET_KEY = os.getenv("SCW_SECRET_KEY")
 SCW_ACCESS_KEY = os.getenv("SCW_ACCESS_KEY")
 
-OPENAI_API_KEY = os.getenv("SCW_SECRET_KEY")
-
 # --- DB connection ---
 SCW_DB_USER = os.getenv("SCW_DB_USER")
 SCW_DB_PASSWORD = os.getenv("SCW_DB_PASSWORD")

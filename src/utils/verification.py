@@ -5,8 +5,8 @@ from openai import OpenAI
 from src.config import SCW_SECRET_KEY
 
 
-async def verificate_signal(signal: EmergencySignal):
-    response = await get_llm_response(signal.text)
+async def verify_signal(signal: EmergencySignal):
+    response = await get_llm_response(signal.message)
     result = LLMResponse(
         category=response['category'],
         confidence=response['confidence'],
@@ -29,6 +29,33 @@ async def get_llm_response(text: str):
 
     prompt = (
         "You are an assistant that classifies emergency messages.\n"
+        "Respond as JSON with fields: category, confidence (0-1), explanation.\n"
+        f"Message: '{text}'\n"
+        "Categories: medical, fire, flood, earthquake, violence, accident, false, ambiguous, other."
+        "If there no emergency at all category must be false"
+    )
+
+    response = client.chat.completions.create(
+        model="gemma-3-27b-it",
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=512,
+        temperature=1,
+        top_p=0.95,
+        presence_penalty=0,
+    )
+    content = response.choices[0].message.content.replace('```json', '').replace('```', '').strip()
+    parsed = json.loads(content)
+    print(parsed)
+    return parsed
+
+async def get_llm_response_for_disaster(signal: EmergencySignal):
+    client = OpenAI(
+        base_url="https://api.scaleway.ai/1bd896b3-3aab-4161-98b5-b3d525511efd/v1",
+        api_key=SCW_SECRET_KEY,
+    )
+
+    prompt = (
+        "You are an assistant that classifies if an emergency message is a disaster.\n"
         "Respond as JSON with fields: category, confidence (0-1), explanation.\n"
         f"Message: '{text}'\n"
         "Categories: medical, fire, flood, earthquake, violence, accident, false, ambiguous, other."

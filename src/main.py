@@ -1,4 +1,5 @@
 import uvicorn
+import os
 
 from fastapi import FastAPI
 from src.routes.signal import signal_router

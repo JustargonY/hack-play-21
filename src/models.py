@@ -3,8 +3,8 @@ from typing import Optional
 
 
 class EmergencySignal(BaseModel):
-    user: str
-    cell_id: str
+    user_id: str
+    cell_id: int
     timestamp: float
     text: Optional[str] = None
 
@@ -15,5 +15,7 @@ class ExternalServicesMessage(BaseModel):
     text: Optional[str] = None
 
 
-class TestModel(BaseModel):
-    id: str
+class LLMResponse(BaseModel):
+    category: str
+    confidence: float
+    explanation: str

@@ -2,11 +2,15 @@ import uvicorn
 
 from fastapi import FastAPI
 from src.routes.signal import signal_router
+from src.routes.db_routes import db_router
 from src.config import connection
+from src.models import EmergencySignal
 from fastapi.middleware.cors import CORSMiddleware
+from src.utils.helpers import get_users_to_send_message
 
 app = FastAPI(debug=True)
 app.include_router(signal_router)
+app.include_router(db_router)
 
 origins = [
     "http://localhost.tiangolo.com",
@@ -23,13 +27,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/")
-def emergency():
-    return {"message": "Hello World"}
-
 
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)
+
+    # signal = EmergencySignal(
+    #     user_id='xxx',
+    #     cell_rk=1198824411,
+    #     message='xd',
+    # )
+    #
+    # for i in get_users_to_send_message(signal, connection):
+    #     print(i)
 
     # cursor = connection.cursor()
     #

@@ -48,7 +48,8 @@ async def generate_message_for_external_service(signal: EmergencySignal, llm_res
         "You need to generate official message for public services describing the emergency situation.\n"
         "Respond as JSON with fields: category, message, confidence (0-1).\n"
         "Do not ask any questions, you just need to write a report for public services.\n"
-        "Also remember that location is already given to the services"
+        "Also remember that location is already given to the services\n"
+        "Also remember that if level of confidence from previous model is below 0.8 it means that there are many reports from this area"
     )
 
     response = client.chat.completions.create(

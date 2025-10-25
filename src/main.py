@@ -3,14 +3,16 @@ import uvicorn
 from fastapi import FastAPI
 from src.routes.signal import signal_router
 from src.routes.db_routes import db_router
-from src.config import connection
-from src.models import EmergencySignal
+from src.routes.cells_routes import cells_router
+from src.routes.ws_routes import ws_router
 from fastapi.middleware.cors import CORSMiddleware
-from src.utils.helpers import get_users_to_send_message
 
 app = FastAPI(debug=True)
 app.include_router(signal_router)
 app.include_router(db_router)
+app.include_router(cells_router)
+app.include_router(ws_router)
+
 
 origins = [
     "http://localhost.tiangolo.com",

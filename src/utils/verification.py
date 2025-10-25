@@ -1,6 +1,6 @@
 import json
 
-from ..models import EmergencySignal, LLMResponse
+from ..models import EmergencySignal, LLMResponse, LLMDisasterResponse
 from openai import OpenAI
 from src.config import SCW_SECRET_KEY
 
@@ -15,8 +15,13 @@ async def verify_signal(signal: EmergencySignal):
     return result
 
 
-async def verify_for_broadcasting(text: str):
-    return True
+async def verify_for_broadcasting(signal: EmergencySignal, llm_response: LLMResponse):
+    response = await get_llm_response_for_disaster(signal, llm_response)
+    result = LLMDisasterResponse(
+        confidence=response['confidence'],
+        explanation=response['explanation'],
+    )
+    return result
 
 
 async def get_llm_response(text: str):
@@ -48,18 +53,22 @@ async def get_llm_response(text: str):
     print(parsed)
     return parsed
 
-async def get_llm_response_for_disaster(signal: EmergencySignal):
+
+async def get_llm_response_for_disaster(signal: EmergencySignal, llm_response: LLMResponse):
     client = OpenAI(
         base_url="https://api.scaleway.ai/1bd896b3-3aab-4161-98b5-b3d525511efd/v1",
         api_key=SCW_SECRET_KEY,
     )
 
     prompt = (
-        "You are an assistant that classifies if an emergency message is a disaster.\n"
-        "Respond as JSON with fields: category, confidence (0-1), explanation.\n"
-        f"Message: '{text}'\n"
-        "Categories: medical, fire, flood, earthquake, violence, accident, false, ambiguous, other."
-        "If there no emergency at all category must be false"
+        "You are an assistant that classifies if an emergency message is a mass disaster like drone attack, forest fire or flood and if the message about this emergency should be broadcasted to all phones near.\n"
+        f"You have message text from the user : '{signal.message}'\n"
+        f"Also you have message text from another model that verifies this message and you have explanation why it is an emergency: '{llm_response.explanation}'\n"
+        f"And category: '{llm_response.category}'\n"
+        f"And level of confidence: '{llm_response.confidence}'\n"
+        "You should define whether it is a disaster and people should get message by giving confidence level\n"
+        "The higher confidence level you give the higher is probability that this emergency should be broadcasted to all people near.\n"
+        "Respond as JSON with fields: confidence (0-1), explanation.\n"
     )
 
     response = client.chat.completions.create(

@@ -26,10 +26,15 @@ class DisasterMessage(BaseModel):
     cell_rk: int
     timestamp: str = datetime.datetime.now()
     message: str
-    emergency_type: str
+    em_type: str
 
 
 class LLMResponse(BaseModel):
     category: str
+    confidence: float
+    explanation: str
+
+
+class LLMDisasterResponse(BaseModel):
     confidence: float
     explanation: str

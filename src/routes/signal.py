@@ -22,10 +22,13 @@ async def receive_signal(signal: EmergencySignal, background: BackgroundTasks):
     if response.category != 'false' and response.confidence >= 0.8:
         background.add_task(send_to_external_service, signal, response)
         # if needed - broadcast to people nearby
-        if verify_for_broadcasting:
-            background.add_task(send_sms, signal)
+        dis_response = await verify_for_broadcasting(signal, response)
+        print(dis_response)
+        if dis_response.confidence >= 0.8:
+            print('it is massive emergency')
+            background.add_task(send_sms, signal, response)
     else:
         print("verification failed")
-        return {'message': 'Verification failed'}
+        return {'message': 'Verification failed: confidence is too low'}
 
-    return {'message': 'Signal processed'}
+    return {'message': 'Signal processed: messages sent to needed agents'}

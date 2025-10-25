@@ -30,22 +30,3 @@ app.add_middleware(
 
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)
-
-    # signal = EmergencySignal(
-    #     user_id='xxx',
-    #     cell_rk=1198824411,
-    #     message='xd',
-    # )
-    #
-    # for i in get_users_to_send_message(signal, connection):
-    #     print(i)
-
-    # cursor = connection.cursor()
-    #
-    # query = "SELECT * FROM messages_em;"
-    # cursor.execute(query)
-    #
-    # results = cursor.fetchall()
-    # column_names = [desc[0] for desc in cursor.description]
-    # print(column_names)
-    # print(results)
